@@ -206,7 +206,9 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
 
       std::vector<MultithreadingParams> thread_params;
       std::vector<std::unique_ptr<Instruction>> instructions;
-      for (const auto& thread : options.threads()) {
+
+      for (int t = 0; t < options.threads().size(); t++) {
+        const auto& thread = options.threads()[t];
         for (int i = 0; i < thread.spawn(); i++) {
           auto thread_ids_copy = thread_ids;
           thread_ids_copy.push_back(InstructionFactory::GenerateThreadId());
@@ -217,15 +219,15 @@ std::unique_ptr<Instruction> InstructionFactory::CreateFromProtoInstruction(
           if (thread.has_name()) {
             thread_name = thread.name() + "_" + std::to_string(i);
           } else {
-            thread_name = std::to_string(i);
+            thread_name = std::to_string(t) + "_" + std::to_string(i);
           }
 
-          SchedAttr sched_attr = {};
+          SchedAttr sched_attr(Syscall::GetSyscall());
           if (thread.has_sched_attr()) {
             sched_attr = thread.sched_attr();
           }
 
-          SchedAffinity sched_affinity = {};
+          SchedAffinity sched_affinity(Syscall::GetSyscall());
           if (thread.has_sched_affinity()) {
             sched_affinity = thread.sched_affinity();
           }
