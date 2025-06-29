@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library", "cc_test")
+load("@rules_proto//proto:defs.bzl", "proto_library")
+
 licenses(["notice"])
 
 exports_files([
@@ -35,7 +38,7 @@ cc_proto_library(
 
 genrule(
     name = "dittobench_gen_embedded_benchmarks",
-    srcs = glob(["example/**/*.ditto"]),
+    srcs = glob(["example/**/*.txtpb"]),
     outs = ["generated/embedded_benchmarks.cpp"],
     cmd = "./$(location ditto2cpp.py) -s $(SRCS) -o $@",
     tools = ["ditto2cpp.py"],
